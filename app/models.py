@@ -29,7 +29,7 @@ class Certificate(Base):
     file_path = Column(String)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
-    jobs = relationship("Job",back_populates="certificates")
+    job = relationship("Job",back_populates="certificates")
 
 
 import enum

@@ -3,4 +3,4 @@ __pycache__/
 *.py[cod]
 .env
 certificate.db
-generated_certificates/
+generated/
