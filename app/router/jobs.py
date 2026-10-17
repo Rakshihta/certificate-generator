@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, BackgroundTasks
+from fastapi import APIRouter, Depends, status, BackgroundTasks, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
@@ -34,3 +34,43 @@ def create_job(payload: schemas.JobCreate,background_tasks: BackgroundTasks, db:
     
 
     return job
+
+
+@router.get("/{job_id}/", response_model=schemas.JobStatusOut)
+def get_job_status(job_id: int, db: Session = Depends(get_db)):
+   
+    job = db.get(models.Job, job_id)
+
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    progress = (
+        (job.completed + job.failed) / job.total
+        if job.total > 0
+        else 0.0
+    )
+
+    #failure list
+    failures = [
+        schemas.FailureOut(
+            cert_id=cert.cert_id,
+            name=cert.name,
+            error=cert.error_message
+        )
+        for cert in job.certificates
+        if cert.status == "FAILED"
+    ]
+
+    #response data
+    return schemas.JobStatusOut(
+        job_id=job.job_id,
+        status=job.status,
+        total=job.total,
+        completed=job.completed,
+        failed=job.failed,
+        progress=progress,
+        failures=failures
+    )

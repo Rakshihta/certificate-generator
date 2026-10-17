@@ -4,3 +4,4 @@ __pycache__/
 .env
 certificate.db
 generated/
+scripts/

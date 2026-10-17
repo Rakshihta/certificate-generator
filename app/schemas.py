@@ -1,6 +1,7 @@
 from datetime import date
 from pydantic import BaseModel, Field, ConfigDict
 
+#job and certificate creation
 class RecipientIn(BaseModel):
     name: str
     course: str
@@ -15,3 +16,18 @@ class JobCreated(BaseModel):
     job_id: int      
     status: str
     total: int
+
+
+class FailureOut(BaseModel):
+    cert_id: int
+    name: str
+    error: str | None
+
+class JobStatusOut(BaseModel):
+    job_id: int
+    status: str
+    total: int
+    completed: int
+    failed: int
+    progress: float          # 0.0 to 1.0
+    failures: list[FailureOut]
